@@ -13,21 +13,25 @@ public class Subsequence {
      * @param y second sequence
      * @return <code>true</code> if possible, otherwise <code>false</code>
      */
-    @SuppressWarnings("rawtypes")
-    //can i change signtture?
+
     public boolean find(List x, List y) {
-        List z = new ArrayList();
-        // TODO: Implement the logic here
-        if (x.size() > y.size()) {
+        if (x == null || y == null) {
+            throw new IllegalArgumentException();
+        } else if (x.size() > y.size()) {
             return false;
+        } else if (x.size() == 0) {
+            return true;
         } else {
-            for (int i = 0; i < x.size(); i++) {
-                for (int j = 0; j < y.size(); j++) {
-                    if (x.get(i) == y.get(i) || x.get(i) == y.get(j)) {
-                        z.add(y.get(j));
+            int n = 0;
+            for (int i = 0; i < y.size(); i++) {
+                if (x.get(n) == y.get(i)) {
+                    n++;
+                    if (n == x.size()) {
+                        return true;
                     }
                 }
-            } if(z.equals(x)) return true;
+            }
+
         }
         return false;
     }
