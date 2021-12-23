@@ -12,7 +12,7 @@ The exam includes 3 tasks to be done: [Calculator](/tasks/Calculator.md), [Pyram
 ### Result ###
 
 * Author name : {Margarita}
-* Codeship : {}
+* Codeship : [![CircleCI](https://circleci.com/gh/Margareeta/T-tasks/tree/circleci-project-setup.svg?style=svg)](https://circleci.com/gh/Margareeta/T-tasks/tree/circleci-project-setup)
 
 Example of Codeship badge. Please remove the example before you send us the link. 
 
