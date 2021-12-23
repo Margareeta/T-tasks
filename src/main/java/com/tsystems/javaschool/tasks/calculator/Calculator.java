@@ -1,10 +1,14 @@
 package com.tsystems.javaschool.tasks.calculator;
 
-import java.util.Stack;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.Double.parseDouble;
 
 public class Calculator {
+
 
     /**
      * Evaluate statement represented as string.
@@ -15,51 +19,140 @@ public class Calculator {
      * @return string value containing result of evaluation or null if statement is invalid
      */
     public String evaluate(String statement) {
-        Stack numbers = new Stack();
-        Stack signs = new Stack();
-        int operationPriority = 0;
-        String x, x1, sign;
-        Double result;
+        try {
+            double i=scan(statement);
+            if ((int)i==i)
+            {
+                return (int)i+"";
+            }
 
+            if((i+"").equals("Infinity")) throw new Exception();
 
-        // TODO: Implement the logic here
-        if (!statement.matches("[\\d.]+|\\+|\\-|\\/|\\(|\\*|\\(|\\)"))
+            return Math.round(i * 10000.0) / 10000.0+"";
+        } catch (Exception e) {
             return null;
-        else {
-            for (int i = 0; i < statement.length(); i++) {
-                if (statement.substring(i).matches("\\d+")) {
-                    numbers.push(statement.substring(i));
-                } else {
-                    signs.push(statement.substring(i));
-                }
-            }
-            for (int i = 0; i < numbers.size(); i++) {
-                x = (String) numbers.pop();
-                sign = (String) signs.pop();
-                x1 = (String) numbers.pop();
-                switch (sign) {
-                    case "+":
-                        result = parseDouble(x) + parseDouble(x1);
-                        Math.round(result);
-                        return result.toString();
-                    case "-":
-                        result = parseDouble(x) - parseDouble(x1);
-                        Math.round(result);
-                        return result.toString();
-
-                    case "*":
-                        result = parseDouble(x) * parseDouble(x1);
-                        return result.toString();
-
-                    case "/":
-                        result = parseDouble(x) / parseDouble(x1);
-                        return result.toString();
-
-                }
-
-            }
         }
-        return "";
+    }
+
+    private static double scan(String s) throws Exception {
+
+        int result = 0;
+        ArrayList[] a = split(s);
+
+        return count(a[0], a[1]);
+
+    }
+
+    private static ArrayList[] split(String s) throws Exception {
+        ArrayList<String> numbers = new ArrayList();
+        ArrayList<Character> operators = new ArrayList();
+        StringBuilder buffer = new StringBuilder();
+        int count = 0;
+        for (char i : s.toCharArray()) {
+            if (s.startsWith("-"))
+            {
+                buffer.append(i);
+                continue;
+            }
+            if (count == 0) {
+                //    +_*/
+                if (i == ')') throw new Exception();
+                if (i == '+' || i == '-' || i == '*' || i == '/') {
+                    operators.add(i);
+                    if (buffer.toString().isEmpty()) throw new Exception();
+                    numbers.add(buffer.toString());
+                    buffer.delete(0, buffer.length());
+                } else {
+                    if (i != '(') {
+                        buffer.append(i);
+                    } else {
+                        if (!buffer.toString().isEmpty()) throw new Exception();
+                        count++;
+                    }
+                }
+            } else {
+                if (i == '(') count++;
+                if (i == ')') {
+                    count--;
+                    if (buffer.toString().isEmpty()) throw new Exception();
+                }
+                if (count != 0) buffer.append(i);
+            }
+
+        }
+        if (buffer.toString().isEmpty()) throw new Exception();
+        numbers.add(buffer.toString());
+
+        return new ArrayList[]{numbers, operators};
+
+    }
+
+    private static double count(ArrayList<String> numbers, ArrayList<Character> operators) throws Exception{
+        int i;
+        while ((i = operators.indexOf('*')) > 0 || (i = operators.indexOf('/')) > 0) {
+            if(operators.indexOf('*')==-1)
+            {
+                i=operators.indexOf('/');
+            } else if(operators.indexOf('/')==-1)
+            {
+                i=operators.indexOf('*');
+            }
+            else {
+                i = operators.indexOf('*') > operators.indexOf('/') ? operators.indexOf('/') : operators.indexOf('*');
+            }
+            numbers.set(i,lilcalculator(numbers.get(i)+"",numbers.get(i+1)+"",operators.get(i))+"");
+            numbers.remove(i+1);
+            operators.remove(i);
+        }
+        i=0;
+        while (numbers.size()>1)
+        {
+            numbers.set(i,lilcalculator(numbers.get(i)+"",numbers.get(i+1)+"",operators.get(i))+"");
+            numbers.remove(i+1);
+            operators.remove(i);
+        }
+
+
+        return Double.parseDouble(numbers.get(0));
+    }
+
+    private static double lilcalculator(String aa, String bb, char operator) throws Exception {
+        double result,a,b;
+        if(aa.contains("+")||
+                aa.contains("-")||
+                aa.contains("*")||
+                aa.contains("/")
+        )
+        {
+            a=scan(aa);
+        }else a=Double.parseDouble(aa);
+        if(bb.contains("+")||
+                bb.contains("-")||
+                bb.contains("*")||
+                bb.contains("/")
+        )
+        {
+            b=scan(bb);
+        }else b=Double.parseDouble(bb);
+
+        switch (operator)
+        {
+            case '+':
+                result=a+b;
+                break;
+            case '-':
+                result=a-b;
+                break;
+            case '*':
+                result=a*b;
+                break;
+            case '/':
+                result=a/b;
+                break;
+            default:
+                throw new Exception("LIL Calculator no such operator");
+        }
+        return result;
     }
 
 }

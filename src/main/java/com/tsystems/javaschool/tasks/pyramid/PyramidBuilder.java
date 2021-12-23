@@ -14,34 +14,29 @@ public class PyramidBuilder {
      * @throws {@link CannotBuildPyramidException} if the pyramid cannot be build with given input
      */
     public int[][] buildPyramid(List<Integer> inputNumbers) {
-        int size = inputNumbers.size();
-        int arrayHeight = 0;
-        int n = 0;
-        int n1 = 0;
-        double d = 1 - 8 * size;
-        int [][] pyramid = new int[0][0];
-        Collections.sort(inputNumbers);
-        if (d > 0){
-            n = (int)(-1 - Math.sqrt(d));
-            n1 = (int)(-1 + Math.sqrt(d));
-        } else try {
-            throw new Exception();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (inputNumbers.contains(null)) throw new CannotBuildPyramidException();
+        int height = getHeight(inputNumbers.size());
 
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < n1; j++) {
-                if(i < j){
-                    pyramid[i][j] = 0;
-                } else {
-                    pyramid[i][j] = inputNumbers.get(i);
-                }
+        Collections.sort(inputNumbers);
+
+        int[][] result = new int[height][2 * height - 1];
+
+        int index = 0;
+        for(int i = 0; i < height; i++) {
+            for(int j = height - i - 1; j < height + i; j += 2) {
+                result[i][j] = inputNumbers.get(index++);
             }
         }
-
-        return pyramid;
+        return result;
     }
 
+    private static int getHeight(int size) {
+        if (size == 0) return 0;
+
+        double res = (Math.sqrt(1 + 8 * size) - 1) / 2;
+        if (res - (int) res != 0.0) throw new CannotBuildPyramidException();
+
+        return (int) res;
+    }
 
 }
